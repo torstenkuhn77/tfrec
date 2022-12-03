@@ -7,6 +7,7 @@
 # seq=$4
 # lowbatt=$5
 # rssi=$6
+# timestamp=$8
 
 import json
 import math
@@ -14,6 +15,7 @@ import os
 import sys
 import time
 from datetime import datetime
+import traceback
 
 configFile = os.path.dirname(__file__) + "/influxdb.conf"
 
@@ -53,7 +55,7 @@ try:
 
 except Exception as ex:
     influxClient = None
-    print("influx init error: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
+    print("influx init: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
     exit(1)
 
 mqttHost = config["mqtt"]["host"]
@@ -76,14 +78,13 @@ try:
     payload["id"] = id
     payload["T"] = float(sys.argv[2])
     payload["RH"] = float(sys.argv[3])
-
-    payload["rssi"] = int(sys.argv[6])
-    payload["batlo"] = sys.argv[5]
     payload["count"] = int(sys.argv[4])
-    payload["init"] = "false"
-#   payload["time"] = sys.argv[7]
+    payload["batlo"] = sys.argv[5]
+    payload["rssi"] = int(sys.argv[6])    
+ #  payload["init"] = bool(sys.argv[7])
+ #  payload["time"] = int(sys.argv[8])
 except Exception as ex:
-    print("Error: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
+    print("payload: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
     
 def getSensorConfig(id):
     for csens in config["sensors"]:
@@ -94,37 +95,36 @@ def getSensorConfig(id):
 def writeInflux(payload):
     if not influxClient:
         return
-    T = payload["T"]
-    wr = {
-        "measurement": "lacrosse",
-        "fields": {
-            "T": T
-        },
-        "tags": {"sensor": payload["id"] if not ("room" in payload) else payload["room"]}
-    }
+    try:
+        T = float(payload["T"])
+        wr = {
+            "measurement": "lacrosse",
+            "fields": {
+                "T": T
+            },
+            "tags": {"sensor": payload["id"]}
+        }
 
-    if ("RH" in payload):
-        RH = float(payload["RH"])
-        T =  float(payload["T"])
+        if ("RH" in payload):
+            RH = float(payload["RH"])
 
-        a = 7.5
-        b = 237.4
-        SDD = 6.1078 * 10 ** (a * T / (b + T))
+            a = 7.5
+            b = 237.4
+            SDD = 6.1078 * 10 ** (a * T / (b + T))
 
-        DD = RH / 100.0 * SDD
-        v = math.log10(DD / 6.1078)
-        
-        payload["DEW"] = round(b * v / (a - v), 1)
-        payload["AH"] = round(10 ** 5 * 18.016/8314.3 * DD / (T + 273.15), 1)
+            DD = RH / 100.0 * SDD
+            v = math.log10(DD / 6.1078)
 
-        wr["fields"]["RH"] = payload['RH']
-        wr["fields"]["DEW"] = payload["DEW"]
-        wr["fields"]["AH"] = payload["AH"]
+            wr["fields"]["RH"] = payload['RH']
+            wr["fields"]["DEW"] = round(b * v / (a - v), 1)
+            wr["fields"]["AH"] = round(10 ** 5 * 18.016/8314.3 * DD / (T + 273.15), 1)
 
-    wr["fields"]["room"] = payload['room']    
-#   wr["fields"]["time"] = payload["time"]
-                
-    influxClient.write_points([wr], "s")
+        wr["fields"]["room"] = payload['room']    
+  #     wr["fields"]["time"] = payload["time"]
+                    
+        influxClient.write_points([wr], "s")
+    except Exception as ex:
+        print("writeInflux: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
 
 def getSensorStatus(id, sensor, sensorConfig):
         if sensorConfig is not None:
@@ -168,10 +168,10 @@ try:
     if influxClient:
         writeInflux(payload)
 except Exception as ex:
-    print("Error: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
-    pass
+    print("main: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
 try:
     if mqttClient:
         mqttClient.publish('home/' + mqttTopic + "/" + payload['id'], json.dumps(payload))
 except:
+    print("mqtt publish: " + ex.__class__.__name__ + " " + (''.join(ex.args)))
     pass
