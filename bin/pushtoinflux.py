@@ -105,7 +105,7 @@ def writeInflux(payload):
             "tags": {"sensor": payload["id"]}
         }
 
-        if ("RH" in payload):
+        if "RH" in payload and float(payload["RH"]) > 0:
             RH = float(payload["RH"])
 
             a = 7.5
@@ -114,11 +114,11 @@ def writeInflux(payload):
 
             DD = RH / 100.0 * SDD
             v = math.log10(DD / 6.1078)
-
-            wr["fields"]["RH"] = payload['RH']
+       
             wr["fields"]["DEW"] = round(b * v / (a - v), 1)
             wr["fields"]["AH"] = round(10 ** 5 * 18.016/8314.3 * DD / (T + 273.15), 1)
 
+        wr["fields"]["RH"] = payload['RH']
         wr["fields"]["room"] = payload['room']    
   #     wr["fields"]["time"] = payload["time"]
                     
