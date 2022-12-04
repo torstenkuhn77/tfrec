@@ -105,7 +105,7 @@ def writeInflux(payload):
             "tags": {"sensor": payload["id"]}
         }
 
-        if "RH" in payload and float(payload("RH")) > 0):
+        if "RH" in payload and float(payload("RH")) > 0:
             RH = float(payload["RH"])
 
             a = 7.5
