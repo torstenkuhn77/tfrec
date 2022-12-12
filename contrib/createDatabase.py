@@ -9,7 +9,7 @@ import threading
 import time
 
 script_dir = os.path.dirname(__file__)
-with open(script_dir + "/lacrossegw.conf") as jfile:
+with open(script_dir + "/influxdb.conf") as jfile:
     config = json.load(jfile)
 
 try:
