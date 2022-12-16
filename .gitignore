@@ -1,4 +1,3 @@
 .depend
-tfrec
 *.o
-
+./../tfrec

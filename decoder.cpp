@@ -70,7 +70,7 @@ void decoder::execute_handler(sensordata_t &d)
 		char cmd[512];
 		uint64_t nid;
 		if (type!=TFA_WHB) {
-//			nid=d.id|(d.type<<24);
+			nid=d.id | (d.type<<24);
 			//                                        t     h  s  a  r  f ts
 			snprintf(cmd,sizeof(cmd),"%s %04" PRIx64 " %+.1f %g %i %i %i %i %li",
 				 handler,
