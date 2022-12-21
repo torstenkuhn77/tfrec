@@ -2,20 +2,20 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "g++ build & run active file",
+            "label": "g++ build active file",
             "command": "/bin/g++",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${workspaceFolder}/*.cpp",
+                "c/*.cpp",
                 "-o",
-                "${fileDirname}/tfrec",
+                "${workspaceFolder}/bin/tfrec",
                 "-lm",
                 "-lrtlsdr",
                 "-lpthread"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": "${workspaceFolder}"
             },
             "problemMatcher": [
                 "$gcc"
