@@ -5,7 +5,7 @@
         "name": "g++ build and debug active file",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${fileDirname}/tfrec",
+        "program": "${workspaceFolder}/bin/tfrec",
         "args": ["-D", "-T" , "7", "-g" , "48", "-W", "-e" , "echo"],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
@@ -26,7 +26,7 @@
         "name": "g++ build & run active file",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${fileDirname}/tfrec",
+        "program": "${workspaceFolder}/bin/tfrec",
         "args": [],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
@@ -41,7 +41,7 @@
             "ignoreFailures": true
           }
         ],
-        "preLaunchTask": "g++ build & run active file"
+        "preLaunchTask": "g++ build active file"
       }
       ]
 }

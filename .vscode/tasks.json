@@ -2,12 +2,12 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "g++ build active file",
+            "label": "g++ build & run active file",
             "command": "/bin/g++",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${workspaceFolder}/${file}",
+                "${workspaceFolder}/*.cpp",
                 "-o",
                 "${fileDirname}/tfrec",
                 "-lm",
