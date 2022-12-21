@@ -7,7 +7,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "c/*.cpp",
+                "${workspaceFolder}/*.cpp",
                 "-o",
                 "${workspaceFolder}/bin/tfrec",
                 "-lm",

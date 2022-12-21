@@ -1,3 +1,4 @@
 .depend
 *.o
 ./../tfrec
+./../bin/tfrec
